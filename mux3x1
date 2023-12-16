@@ -1,0 +1,10 @@
+/*
+ *multiplexador pro projeto e talvez o relogio em si
+ */
+ module mux3x1 (e0,e1,e2,e4,e5,sw17,sw16,sw15,f);
+ // declaracao das entradas e saidas
+	input e0,e1,e2,e4,e5,sw17,sw16,sw15;
+	output f;
+ //Funcionamento: relogio alarme des         relogio alarme lig            cronometro                 ajuste relogio                ajuste alarme
+	assign f = e0&(~sw17)&(~sw16)&(~sw15) | e1&(~sw17)&(~sw16)&sw15 | e2&(~sw17)&sw16&(~sw15) | e4&sw17&(~sw16)&(~sw15) | e5&sw17&(~sw16)& sw15;
+endmodule
