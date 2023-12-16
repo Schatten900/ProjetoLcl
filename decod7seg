@@ -1,0 +1,20 @@
+module decod7seg (ent,said);
+	input [3:0] ent;
+	output reg [6:0] said;
+	
+	always @* begin
+		case (ent)
+			4'b0000: said = 7'b1000000;
+			4'b0001: said = 7'b1111001;
+			4'b0010: said = 7'b0100100;
+			4'b0011: said = 7'b0110000;
+			4'b0100: said = 7'b0011001;
+			4'b0101: said = 7'b0010010;
+			4'b0110: said = 7'b0110010;
+			4'b0111: said = 7'b1111000;
+			4'b1000: said = 7'b0000000;
+			4'b1001: said = 7'b0010000;
+			default: said = 7'b1111111;
+		endcase
+	end
+endmodule
