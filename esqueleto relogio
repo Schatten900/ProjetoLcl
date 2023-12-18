@@ -1,0 +1,56 @@
+
+module relogio4b(
+	input clk,
+	output reg [3:0] contador1,				// primeiro contador
+	output reg [6:0] saida_decodificador,	// primeira saida
+	
+	output reg [3:0] contador2, 				// segundo contador
+	output reg [6:0] saida_decodificador2	// segunda saida 
+	);
+	
+	
+	always @(posedge clk) begin
+		if (contador1 == 4'b1010) begin
+			contador1 <= 4'b0000;
+			contador2 <= contador2 + 4'b0001;
+			end
+		
+		else begin
+			contador1 <= contador1 + 4'b0001;
+		end
+		
+		if (contador2 == 4'b0101) begin
+			contador2 <= 4'b0000;
+		end
+	end
+
+
+//decodificador de 7 segmentos
+always @(posedge clk) begin
+	case (contador1)
+		
+		4'b0000: saida_decodificador = 7'b1000000;
+		4'b0001: saida_decodificador = 7'b1111001;
+		4'b0010: saida_decodificador = 7'b0100100;
+		4'b0011: saida_decodificador = 7'b0110000;
+		4'b0100: saida_decodificador = 7'b0011001;
+		4'b0101: saida_decodificador = 7'b0010010;
+		4'b0110: saida_decodificador = 7'b0110010;
+		4'b0111: saida_decodificador = 7'b1111000;
+		4'b1000: saida_decodificador = 7'b0000000;
+		4'b1001: saida_decodificador = 7'b0010000;
+		default: saida_decodificador = 7'b1111111;
+	endcase
+		
+	case (contador2)
+		4'b0000: saida_decodificador2 = 7'b1000000;
+		4'b0001: saida_decodificador2 = 7'b1111001;
+		4'b0010: saida_decodificador2 = 7'b0100100;
+		4'b0011: saida_decodificador2 = 7'b0110000;
+		4'b0100: saida_decodificador2 = 7'b0011001;
+		4'b0101: saida_decodificador2 = 7'b0010010;
+		default: saida_decodificador2 = 7'b1111111;
+	endcase
+end
+
+endmodule
