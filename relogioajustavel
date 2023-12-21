@@ -1,0 +1,216 @@
+// relogio ajustavel
+module relogio_ajuste(
+	input clk,
+	input set2,
+	input [5:0] chaves2,
+	output reg [3:0] contador1,				// primeiro contador
+	output reg [6:0] saida_decodificador,	// primeira saida
+	
+	output reg [3:0] contador2, 				// segundo contador
+	output reg [6:0] saida_decodificador2,	// segunda saida 
+	
+	output reg [3:0] contador3, 				// terceiro contador
+	output reg [6:0] saida_decodificador3,	// terceira saida 
+	
+	output reg [3:0] contador4, 				// quarto contador
+	output reg [6:0] saida_decodificador4,	// quarta saida 
+	
+	output reg [3:0] contador5, 				// quinto contador
+	output reg [6:0] saida_decodificador5,	// quinta saida 
+	
+	output reg [3:0] contador6, 				// sexto contador
+	output reg [6:0] saida_decodificador6,	// sexta saida 
+	
+	output reg [3:0] contador7, 				// setimo contador
+	output reg [6:0] saida_decodificador7,	// setima saida 
+	
+	output reg [3:0] contador8, 				// oitavo contador
+	output reg [6:0] saida_decodificador8	// oitava saida 
+	);
+	
+	reg [2:0] state;
+	
+	always @(posedge clk or posedge set2) begin	// funcionamento de setar as horas
+		if (set2) begin
+			case (state)
+				2'b00: begin
+					contador8 <= chaves2;
+					contador7 <= chaves2;
+					state <= 2'b01;
+				end
+				2'b01: begin
+					contador6 <= chaves2;
+					contador5 <= chaves2;
+					state <= 2'b10;
+				end
+				2'b10: begin
+					contador4 <= chaves2;
+					contador3 <= chaves2;
+					state <= 2'b00;
+				end
+			endcase
+		end
+	end
+	
+	
+	always @(posedge clk) begin
+		if (contador1 == 4'b1010) begin
+			contador1 <= 4'b0000;
+			contador2 <= contador2 + 4'b0001;
+			end
+		
+		else begin
+			contador1 <= contador1 + 4'b0001;
+		end
+		
+		if (contador2 == 4'b0110) begin
+			contador2 <= 4'b0000;
+			contador3 <= contador3 + 4'b0001;
+		end
+		
+		
+		if (contador3 == 4'b1010) begin
+			contador3 <= 4'b0000;
+			contador4 <= contador4 + 4'b0001;
+		end
+		
+		if (contador4 == 4'b0110) begin
+			contador4 <= 4'b0000;
+			contador5 <= contador5 + 4'b0001;
+		end
+		
+		if (contador5 == 4'b1010) begin
+			contador5 <= 4'b0000;
+			contador6 <= contador6 + 4'b0001;
+		end
+		
+		if (contador6 == 4'b0110) begin
+			contador6 <= 4'b0000;
+			contador7 <= contador7 + 4'b0001;
+		end
+		
+		if (contador7 == 4'b1010) begin
+			contador7 <= 4'b0000;
+			contador8 <= contador8 + 4'b0001;
+		end
+		
+		if (contador8 == 4'b0011) begin
+			contador8 <= 4'b0000;
+			contador7 <= 4'b0000;
+			contador6 <= 4'b0000;
+			contador5 <= 4'b0000;
+			contador4 <= 4'b0000;
+			contador3 <= 4'b0000;
+			contador2 <= 4'b0000;
+			contador1 <= 4'b0000;
+		end
+		
+	end
+
+
+//decodificador de 7 segmentos
+always @(posedge clk) begin
+	case (contador1)		//centesimos
+		
+		4'b0000: saida_decodificador = 7'b1000000;
+		4'b0001: saida_decodificador = 7'b1111001;
+		4'b0010: saida_decodificador = 7'b0100100;
+		4'b0011: saida_decodificador = 7'b0110000;
+		4'b0100: saida_decodificador = 7'b0011001;
+		4'b0101: saida_decodificador = 7'b0010010;
+		4'b0110: saida_decodificador = 7'b0110010;
+		4'b0111: saida_decodificador = 7'b1111000;
+		4'b1000: saida_decodificador = 7'b0000000;
+		4'b1001: saida_decodificador = 7'b0010000;
+		default: saida_decodificador = 7'b1111111;
+	endcase
+		
+	case (contador2)		//centesimos ainda
+		4'b0000: saida_decodificador2 = 7'b1000000;
+		4'b0001: saida_decodificador2 = 7'b1111001;
+		4'b0010: saida_decodificador2 = 7'b0100100;
+		4'b0011: saida_decodificador2 = 7'b0110000;
+		4'b0100: saida_decodificador2 = 7'b0011001;
+		4'b0101: saida_decodificador2 = 7'b0010010;
+		default: saida_decodificador2 = 7'b1111111;
+	endcase
+	
+	
+	case (contador3)		//segundos
+		4'b0000: saida_decodificador3 = 7'b1000000;
+		4'b0001: saida_decodificador3 = 7'b1111001;
+		4'b0010: saida_decodificador3 = 7'b0100100;
+		4'b0011: saida_decodificador3 = 7'b0110000;
+		4'b0100: saida_decodificador3 = 7'b0011001;
+		4'b0101: saida_decodificador3 = 7'b0010010;
+		default: saida_decodificador3 = 7'b1111111;
+		4'b0110: saida_decodificador3 = 7'b0110010;
+		4'b0111: saida_decodificador3 = 7'b1111000;
+		4'b1000: saida_decodificador3 = 7'b0000000;
+		4'b1001: saida_decodificador3 = 7'b0010000;
+	endcase
+	
+	
+	
+	case (contador4)		//segundos ainda
+		4'b0000: saida_decodificador4 = 7'b1000000;
+		4'b0001: saida_decodificador4 = 7'b1111001;
+		4'b0010: saida_decodificador4 = 7'b0100100;
+		4'b0011: saida_decodificador4 = 7'b0110000;
+		4'b0100: saida_decodificador4 = 7'b0011001;
+		4'b0101: saida_decodificador4 = 7'b0010010;
+		default: saida_decodificador4 = 7'b1111111;
+	endcase
+	
+	
+	
+	case (contador5)		//minutos
+		4'b0000: saida_decodificador5 = 7'b1000000;
+		4'b0001: saida_decodificador5 = 7'b1111001;
+		4'b0010: saida_decodificador5 = 7'b0100100;
+		4'b0011: saida_decodificador5 = 7'b0110000;
+		4'b0100: saida_decodificador5 = 7'b0011001;
+		4'b0101: saida_decodificador5 = 7'b0010010;
+		4'b0110: saida_decodificador5 = 7'b0110010;
+		4'b0111: saida_decodificador5 = 7'b1111000;
+		4'b1000: saida_decodificador5 = 7'b0000000;
+		4'b1001: saida_decodificador5 = 7'b0010000;
+		default: saida_decodificador5 = 7'b1111111;
+	endcase
+	
+	
+	
+	case (contador6)		//minutos ainda
+		4'b0000: saida_decodificador6 = 7'b1000000;
+		4'b0001: saida_decodificador6 = 7'b1111001;
+		4'b0010: saida_decodificador6 = 7'b0100100;
+		4'b0011: saida_decodificador6 = 7'b0110000;
+		4'b0100: saida_decodificador6 = 7'b0011001;
+		4'b0101: saida_decodificador6 = 7'b0010010;
+		default: saida_decodificador6 = 7'b1111111;
+	endcase
+	
+	
+	case (contador7)		//horas
+		4'b0000: saida_decodificador7 = 7'b1000000;
+		4'b0001: saida_decodificador7 = 7'b1111001;
+		4'b0010: saida_decodificador7 = 7'b0100100;
+		4'b0011: saida_decodificador7 = 7'b0110000;
+		4'b0100: saida_decodificador7 = 7'b0011001;
+		4'b0101: saida_decodificador7 = 7'b0010010;
+		4'b0110: saida_decodificador7 = 7'b0110010;
+		4'b0111: saida_decodificador7 = 7'b1111000;
+		4'b1000: saida_decodificador7 = 7'b0000000;
+		4'b1001: saida_decodificador7 = 7'b0010000;
+		default: saida_decodificador7 = 7'b1111111;
+		
+	endcase
+	
+	case (contador8)		//horas ainda
+		4'b0000: saida_decodificador8 = 7'b1000000;
+		4'b0001: saida_decodificador8 = 7'b1111001;
+		4'b0010: saida_decodificador8 = 7'b0100100;
+	endcase
+end
+
+endmodule
