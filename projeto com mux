@@ -1,0 +1,448 @@
+module muxproj(
+	input clk,
+	input reset,
+	input set,
+	input pause,
+	input [5:0] chaves,
+	input [2:0] select,
+
+	output reg [3:0] contador1,				// primeiro contador
+	output reg [6:0] saida_decodificador,	// primeira saida
+	
+	output reg [3:0] contador2, 				// segundo contador
+	output reg [6:0] saida_decodificador2,	// segunda saida 
+	
+	output reg [3:0] contador3, 				// terceiro contador
+	output reg [6:0] saida_decodificador3,	// terceira saida 
+	
+	output reg [3:0] contador4, 				// quarto contador
+	output reg [6:0] saida_decodificador4,	// quarta saida 
+	
+	output reg [3:0] contador5, 				// quinto contador
+	output reg [6:0] saida_decodificador5,	// quinta saida 
+	
+	output reg [3:0] contador6, 				// sexto contador
+	output reg [6:0] saida_decodificador6,	// sexta saida 
+	
+	output reg [3:0] contador7, 				// setimo contador
+	output reg [6:0] saida_decodificador7,	// setima saida 
+	
+	output reg [3:0] contador8, 				// oitavo contador
+	output reg [6:0] saida_decodificador8,	// oitava saida 
+	
+	output reg [3:0] cronometro8, 			//oitavo cronometro
+	output reg [6:0] saida_cronometro8,		//oitava saida cronometro
+	
+	output reg [3:0] cronometro7, 			//oitavo cronometro
+	output reg [6:0] saida_cronometro7,		//oitava saida cronometro
+	
+	output reg [3:0] cronometro6, 			//oitavo cronometro
+	output reg [6:0] saida_cronometro6,		//oitava saida cronometro
+	
+	output reg [3:0] cronometro5, 			//oitavo cronometro
+	output reg [6:0] saida_cronometro5,		//oitava saida cronometro
+	
+	output reg [3:0] cronometro4, 			//oitavo cronometro
+	output reg [6:0] saida_cronometro4,		//oitava saida cronometro
+	
+	output reg [3:0] cronometro3, 			//oitavo cronometro
+	output reg [6:0] saida_cronometro3,		//oitava saida cronometro
+	
+	output reg [3:0] cronometro2, 			//oitavo cronometro
+	output reg [6:0] saida_cronometro2,	//oitava saida cronometro
+	
+	output reg [3:0] cronometro1, 			//oitavo cronometro
+	output reg [6:0] saida_cronometro1,		//oitava saida cronometro
+	
+	output reg buzzer_ativo
+);
+	reg [3:0] alarme_horas;			//variavel de armazenamento
+	reg [3:0] alarme_horas2;		//variavel de armazenamento
+	
+	reg [3:0] alarme_minutos;		//variavel de armazenamento
+	reg [3:0] alarme_minutos2;		//variavel de armazenamento
+	
+	reg [3:0] alarme_segundos;		//variavel de armazenamento
+	reg [3:0] alarme_segundos2;	//variavel de armazenamento
+	reg [2:0] state; 					// estado 00 padrao 01 horas 10 minutos 11 segundos (alarme)
+	reg cronometro_on;
+	reg alarme_on;
+	
+
+//	3'b000: estado <= 3'b000;			//relogio alarme desligado
+//	3'b001: estado <= 3'b001;			//relogio alarme ligado
+//	3'b010: estado <= 3'b010; 			//cronometro
+//	3'b100: estado <= 3'b100;			//ajuste da hora
+//	3'b101: estado <= 3'b101; 			//ajuste do alarme
+//	default: estado <= estado;
+//endcase
+	
+	always @(posedge clk) begin				// funcionamento relogio
+		if (contador1 == 4'b1010) begin
+			contador1 <= 4'b0000;
+			contador2 <= contador2 + 4'b0001;
+		
+		end else begin
+			contador1 <= contador1 + 4'b0001;
+		end
+		
+		if (contador2 == 4'b0110) begin
+			contador2 <= 4'b0000;
+			contador3 <= contador3 + 4'b0001;
+		end
+		
+		if (contador3 == 4'b1010) begin
+			contador3 <= 4'b0000;
+			contador4 <= contador4 + 4'b0001;
+		end
+		
+		if (contador4 == 4'b0110) begin
+			contador4 <= 4'b0000;
+			contador5 <= contador5 + 4'b0001;
+		end
+		
+		if (contador5 == 4'b1010) begin
+			contador5 <= 4'b0000;
+			contador6 <= contador6 + 4'b0001;
+		end
+		
+		if (contador6 == 4'b0110) begin
+			contador6 <= 4'b0000;
+			contador7 <= contador7 + 4'b0001;
+		end
+		
+		if (contador7 == 4'b1010) begin
+			contador7 <= 4'b0000;
+			contador8 <= contador8 + 4'b0001;
+		end
+		
+		if ((contador8 == 4'b0011)&& (contador7 == 4'b0100)) begin
+			contador8 <= 4'b0000;
+			contador7 <= 4'b0000;
+			contador6 <= 4'b0000;
+			contador5 <= 4'b0000;
+			contador4 <= 4'b0000;
+			contador3 <= 4'b0000;
+			contador2 <= 4'b0000;
+			contador1 <= 4'b0000;
+		end
+		
+		if (alarme_on) begin
+			if (contador8 == alarme_horas && contador7 == alarme_horas2 &&
+				contador6 == alarme_minutos && contador5 == alarme_minutos2 &&
+				contador4 == alarme_segundos && contador3 == alarme_segundos2) begin
+				buzzer_ativo <= 1;
+			end else begin
+				buzzer_ativo <= 0;
+			end
+		end
+	end
+
+	always @(posedge clk or posedge reset or posedge set or posedge pause) begin 		//seleciona
+		if (reset) begin					//cronometro
+			cronometro8 <= 4'b0000;
+			cronometro7 <= 4'b0000;
+			cronometro6 <= 4'b0000;
+			cronometro5 <= 4'b0000;
+			cronometro4 <= 4'b0000;
+			cronometro3 <= 4'b0000;
+			cronometro2 <= 4'b0000;
+			cronometro1 <= 4'b0000;
+			cronometro_on <= 0;
+			
+		end else begin
+			case (select) 
+				3'b010: 	begin						//cronometro
+					cronometro_on <= 1;
+					if (cronometro1 == 4'b1010) begin
+						cronometro1 <= 4'b0000;
+						cronometro2 <= cronometro2 + 4'b0001;
+					end else begin
+						cronometro1 <= cronometro1 + 4'b0001;
+					end
+			
+					if (cronometro2 == 4'b0110) begin
+						cronometro2 <= 4'b0000;
+						cronometro3 <= cronometro3 + 4'b0001;
+					end
+			
+					if (cronometro3 == 4'b1010) begin
+						cronometro3 <= 4'b0000;
+						cronometro4 <= cronometro4 + 4'b0001;
+					end
+			
+					if (cronometro4 == 4'b0110) begin
+						cronometro4 <= 4'b0000;
+						cronometro5 <= cronometro5 + 4'b0001;
+					end
+			
+					if (cronometro5 == 4'b1010) begin
+						cronometro5 <= 4'b0000;
+						cronometro6 <= cronometro6 + 4'b0001;
+					end
+			
+					if (cronometro6 == 4'b0110) begin
+						cronometro6 <= 4'b0000;
+						cronometro7 <= cronometro7 + 4'b0001;
+					end
+			
+					if (cronometro7 == 4'b1010) begin
+						cronometro7 <= 4'b0000;
+						cronometro8 <= cronometro8 + 4'b0001;
+					end
+			
+					if ((cronometro8 == 4'b0011)& (cronometro7 == 4'b0100)) begin
+						cronometro8 <= 4'b0000;
+						cronometro7 <= 4'b0000;
+						cronometro6 <= 4'b0000;
+						cronometro5 <= 4'b0000;
+						cronometro4 <= 4'b0000;
+						cronometro3 <= 4'b0000;
+						cronometro2 <= 4'b0000;
+						cronometro1 <= 4'b0000;
+					end
+					
+					if (pause) begin
+						cronometro8 <= cronometro8;
+						cronometro7 <= cronometro7;
+						cronometro6 <= cronometro6;
+						cronometro5 <= cronometro5;
+						cronometro4 <= cronometro4;
+						cronometro3 <= cronometro3;
+						cronometro2 <= cronometro2;
+						cronometro1 <= cronometro1;
+					end
+					
+				end
+				3'b101: begin							//ajuste alarme
+					if (set) begin
+						case (state)
+							2'b00: begin
+								alarme_horas <= chaves;
+								alarme_horas2 <= chaves;
+								state <= 2'b01;
+							end
+							2'b01: begin
+								alarme_minutos <= chaves;
+								alarme_minutos2 <= chaves;
+								state <= 2'b10;
+							end
+							2'b10: begin
+								alarme_segundos <= chaves;
+								alarme_segundos2 <= chaves;
+								state <= 2'b00;
+								alarme_on <= 1;
+							end
+						endcase
+					end
+				end
+			endcase
+		end
+	end
+	
+	always @(posedge clk) begin
+		if (cronometro_on) begin
+			case (cronometro1)		//centesimos
+			
+				4'b0000: saida_cronometro1 = 7'b1000000;
+				4'b0001: saida_cronometro1 = 7'b1111001;
+				4'b0010: saida_cronometro1 = 7'b0100100;
+				4'b0011: saida_cronometro1 = 7'b0110000;
+				4'b0100: saida_cronometro1 = 7'b0011001;
+				4'b0101: saida_cronometro1 = 7'b0010010;
+				4'b0110: saida_cronometro1 = 7'b0110010;
+				4'b0111: saida_cronometro1 = 7'b1111000;
+				4'b1000: saida_cronometro1 = 7'b0000000;
+				4'b1001: saida_cronometro1 = 7'b0010000;
+				default: saida_cronometro1 = 7'b1111111;
+			endcase
+			
+			case (cronometro2)		//centesimos ainda
+				4'b0000: saida_cronometro2 = 7'b1000000;
+				4'b0001: saida_cronometro2 = 7'b1111001;
+				4'b0010: saida_cronometro2 = 7'b0100100;
+				4'b0011: saida_cronometro2 = 7'b0110000;
+				4'b0100: saida_cronometro2 = 7'b0011001;
+				4'b0101: saida_cronometro2 = 7'b0010010;
+				default: saida_cronometro2 = 7'b1111111;
+			endcase
+		
+		
+			case (cronometro3)		//segundos
+				4'b0000: saida_cronometro3 = 7'b1000000;
+				4'b0001: saida_cronometro3 = 7'b1111001;
+				4'b0010: saida_cronometro3 = 7'b0100100;
+				4'b0011: saida_cronometro3 = 7'b0110000;
+				4'b0100: saida_cronometro3 = 7'b0011001;
+				4'b0101: saida_cronometro3 = 7'b0010010;
+				4'b0110: saida_cronometro3 = 7'b0110010;
+				4'b0111: saida_cronometro3 = 7'b1111000;
+				4'b1000: saida_cronometro3 = 7'b0000000;
+				4'b1001: saida_cronometro3 = 7'b0010000;
+				default: saida_cronometro3 = 7'b1111111;
+			endcase
+		
+		
+		
+			case (cronometro4)		//segundos ainda
+				4'b0000: saida_cronometro4 = 7'b1000000;
+				4'b0001: saida_cronometro4 = 7'b1111001;
+				4'b0010: saida_cronometro4 = 7'b0100100;
+				4'b0011: saida_cronometro4 = 7'b0110000;
+				4'b0100: saida_cronometro4 = 7'b0011001;
+				4'b0101: saida_cronometro4 = 7'b0010010;
+				default: saida_cronometro4 = 7'b1111111;
+			endcase
+			
+		
+			case (cronometro5)		//minutos
+				4'b0000: saida_cronometro5 = 7'b1000000;
+				4'b0001: saida_cronometro5 = 7'b1111001;
+				4'b0010: saida_cronometro5 = 7'b0100100;
+				4'b0011: saida_cronometro5 = 7'b0110000;
+				4'b0100: saida_cronometro5 = 7'b0011001;
+				4'b0101: saida_cronometro5 = 7'b0010010;
+				4'b0110: saida_cronometro5 = 7'b0110010;
+				4'b0111: saida_cronometro5 = 7'b1111000;
+				4'b1000: saida_cronometro5 = 7'b0000000;
+				4'b1001: saida_cronometro5 = 7'b0010000;
+				default: saida_cronometro5 = 7'b1111111;
+			endcase
+		
+		
+		
+			case (cronometro6)		//minutos ainda
+				4'b0000: saida_cronometro6 = 7'b1000000;
+				4'b0001: saida_cronometro6 = 7'b1111001;
+				4'b0010: saida_cronometro6 = 7'b0100100;
+				4'b0011: saida_cronometro6 = 7'b0110000;
+				4'b0100: saida_cronometro6 = 7'b0011001;
+				4'b0101: saida_cronometro6 = 7'b0010010;
+				default: saida_cronometro6 = 7'b1111111;
+			endcase
+		
+		
+			case (cronometro7)		//horas
+				4'b0000: saida_cronometro7 = 7'b1000000;
+				4'b0001: saida_cronometro7 = 7'b1111001;
+				4'b0010: saida_cronometro7 = 7'b0100100;
+				4'b0011: saida_cronometro7 = 7'b0110000;
+				4'b0100: saida_cronometro7 = 7'b0011001;
+				4'b0101: saida_cronometro7 = 7'b0010010;
+				4'b0110: saida_cronometro7 = 7'b0110010;
+				4'b0111: saida_cronometro7 = 7'b1111000;
+				4'b1000: saida_cronometro7 = 7'b0000000;
+				4'b1001: saida_cronometro7 = 7'b0010000;
+				default: saida_cronometro7 = 7'b1111111;
+			
+			endcase
+		
+			case (cronometro8)		//horas ainda
+				4'b0000: saida_cronometro8 = 7'b1000000;
+				4'b0001: saida_cronometro8 = 7'b1111001;
+				4'b0010: saida_cronometro8 = 7'b0100100;
+			endcase
+		
+		end else begin 
+			case (contador1)		//centesimos
+			
+				4'b0000: saida_decodificador = 7'b1000000;
+				4'b0001: saida_decodificador = 7'b1111001;
+				4'b0010: saida_decodificador = 7'b0100100;
+				4'b0011: saida_decodificador = 7'b0110000;
+				4'b0100: saida_decodificador = 7'b0011001;
+				4'b0101: saida_decodificador = 7'b0010010;
+				4'b0110: saida_decodificador = 7'b0110010;
+				4'b0111: saida_decodificador = 7'b1111000;
+				4'b1000: saida_decodificador = 7'b0000000;
+				4'b1001: saida_decodificador = 7'b0010000;
+				default: saida_decodificador = 7'b1111111;
+			endcase
+			
+			case (contador2)		//centesimos ainda
+				4'b0000: saida_decodificador2 = 7'b1000000;
+				4'b0001: saida_decodificador2 = 7'b1111001;
+				4'b0010: saida_decodificador2 = 7'b0100100;
+				4'b0011: saida_decodificador2 = 7'b0110000;
+				4'b0100: saida_decodificador2 = 7'b0011001;
+				4'b0101: saida_decodificador2 = 7'b0010010;
+				default: saida_decodificador2 = 7'b1111111;
+			endcase
+		
+		
+			case (contador3)		//segundos
+				4'b0000: saida_decodificador3 = 7'b1000000;
+				4'b0001: saida_decodificador3 = 7'b1111001;
+				4'b0010: saida_decodificador3 = 7'b0100100;
+				4'b0011: saida_decodificador3 = 7'b0110000;
+				4'b0100: saida_decodificador3 = 7'b0011001;
+				4'b0101: saida_decodificador3 = 7'b0010010;
+				4'b0110: saida_decodificador3 = 7'b0110010;
+				4'b0111: saida_decodificador3 = 7'b1111000;
+				4'b1000: saida_decodificador3 = 7'b0000000;
+				4'b1001: saida_decodificador3 = 7'b0010000;
+				default: saida_decodificador3 = 7'b1111111;
+			endcase
+		
+		
+		
+			case (contador4)		//segundos ainda
+				4'b0000: saida_decodificador4 = 7'b1000000;
+				4'b0001: saida_decodificador4 = 7'b1111001;
+				4'b0010: saida_decodificador4 = 7'b0100100;
+				4'b0011: saida_decodificador4 = 7'b0110000;
+				4'b0100: saida_decodificador4 = 7'b0011001;
+				4'b0101: saida_decodificador4 = 7'b0010010;
+				default: saida_decodificador4 = 7'b1111111;
+			endcase
+		
+			case (contador5)		//minutos
+				4'b0000: saida_decodificador5 = 7'b1000000;
+				4'b0001: saida_decodificador5 = 7'b1111001;
+				4'b0010: saida_decodificador5 = 7'b0100100;
+				4'b0011: saida_decodificador5 = 7'b0110000;
+				4'b0100: saida_decodificador5 = 7'b0011001;
+				4'b0101: saida_decodificador5 = 7'b0010010;
+				4'b0110: saida_decodificador5 = 7'b0110010;
+				4'b0111: saida_decodificador5 = 7'b1111000;
+				4'b1000: saida_decodificador5 = 7'b0000000;
+				4'b1001: saida_decodificador5 = 7'b0010000;
+				default: saida_decodificador5 = 7'b1111111;
+			endcase
+		
+		
+		
+			case (contador6)		//minutos ainda
+				4'b0000: saida_decodificador6 = 7'b1000000;
+				4'b0001: saida_decodificador6 = 7'b1111001;
+				4'b0010: saida_decodificador6 = 7'b0100100;
+				4'b0011: saida_decodificador6 = 7'b0110000;
+				4'b0100: saida_decodificador6 = 7'b0011001;
+				4'b0101: saida_decodificador6 = 7'b0010010;
+				default: saida_decodificador6 = 7'b1111111;
+			endcase
+		
+		
+			case (contador7)		//horas
+				4'b0000: saida_decodificador7 = 7'b1000000;
+				4'b0001: saida_decodificador7 = 7'b1111001;
+				4'b0010: saida_decodificador7 = 7'b0100100;
+				4'b0011: saida_decodificador7 = 7'b0110000;
+				4'b0100: saida_decodificador7 = 7'b0011001;
+				4'b0101: saida_decodificador7 = 7'b0010010;
+				4'b0110: saida_decodificador7 = 7'b0110010;
+				4'b0111: saida_decodificador7 = 7'b1111000;
+				4'b1000: saida_decodificador7 = 7'b0000000;
+				4'b1001: saida_decodificador7 = 7'b0010000;
+				default: saida_decodificador7 = 7'b1111111;
+			
+			endcase
+		
+			case (contador8)		//horas ainda
+				4'b0000: saida_decodificador8 = 7'b1000000;
+				4'b0001: saida_decodificador8 = 7'b1111001;
+				4'b0010: saida_decodificador8 = 7'b0100100;
+			endcase
+		end
+	end
+endmodule
